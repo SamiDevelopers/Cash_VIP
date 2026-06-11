@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام تسييل تطبيقات التقسيط - Cash VIP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        * {
+            direction: rtl;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        }
+
+        .premium-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+        }
+
+        .card-shadow {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-field {
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .stats-card {
+            background: white;
+            border-right: 4px solid #1e3a8a;
+        }
+
+        .table-row-striped:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        .privacy-mode .sensitive-data {
+            filter: blur(5px);
+            color: transparent;
+        }
+
+        .privacy-mode .accounting-section {
+            display: none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            right: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #1e3a8a;
+        }
+
+        input:checked + .slider:before {
+            right: auto;
+            left: 4px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .receipt-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+
+        .number-input::-webkit-outer-spin-button,
+        .number-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .number-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .calc-display {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #bfdbfe;
+        }
+
+        .app-logo {
+            font-size: 48px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .screen-capture-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-md w-full">
+            <div class="bg-white rounded-lg shadow-lg p-8 card-shadow">
+                <div class="text-center mb-8">
+                    <div class="app-logo mb-4">💰 Cash VIP</div>
+                    <h1 class="text-3xl font-bold text-gray-800">نظام التسييل المتقدم</h1>
+                    <p class="text-gray-600 mt-2">إدارة عمليات التسييل والتمويل</p>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <button onclick="showRoleSelection('admin')" class="w-full btn-primary text-white font-bold py-3 px-4 rounded-lg hover:shadow-lg">
+                        🔐 دخول المدير (Admin)
+                    </button>
+                    <button onclick="showRoleSelection('employee')" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">
+                        👤 دخول الموظف (Employee)
+                    </button>
+                </div>
+
+                <div class="border-t pt-6">
+                    <p class="text-sm text-gray-600 text-center mb-4">بيانات اختبار:</p>
+                    <div class="text-sm text-gray-600 space-y-2">
+                        <p><strong>Admin:</strong> admin / admin123</p>
+                        <p><strong>Employee:</strong> emp / emp123</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal-backdrop">
+            <div class="bg-white rounded-lg p-8 shadow-lg max-w-md w-full card-shadow">
+                <h2 class="text-2xl font-bold mb-6">تسجيل الدخول</h2>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">اسم المستخدم</label>
+                        <input type="text" id="loginUsername" class="w-full input-field px-4 py-2 rounded-lg" placeholder="أدخل اسم المستخدم">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">كلمة المرور</label>
+                        <input type="password" id="loginPassword" class="w-full input-field px-4 py-2 rounded-lg" placeholder="أدخل كلمة المرور">
+                    </div>
+
+                    <div id="loginError" class="text-red-600 text-sm hidden"></div>
+
+                    <button onclick="handleLogin()" class="w-full btn-primary text-white font-bold py-2 px-4 rounded-lg">
+                        دخول
+                    </button>
+
+                    <button onclick="closeLoginModal()" class="w-full bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">
+                        إلغاء
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="hidden min-h-screen bg-gray-50">
+        <!-- Navigation Bar -->
+        <nav class="premium-gradient text-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center flex-wrap gap-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-3xl">💰</span>
+                    <span class="text-2xl font-bold">Cash VIP</span>
+                </div>
+
+                <div class="flex items-center gap-4 flex-wrap">
+                    <div class="flex items-center gap-2">
+                        <span id="userRole" class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm"></span>
+                        <span id="userDisplay" class="text-sm"></span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <span class="text-sm">🔒 وضع العميل</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="privacyToggle" onchange="togglePrivacyMode()">
+                                <span class="slider"></span>
+                            </label>
+                        </label>
+                    </div>
+
+                    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
+                        ⚙️ تسجيل خروج
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Tabs Navigation -->
+        <div class="bg-white border-b border-gray-200 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 flex gap-4 overflow-x-auto">
+                <button onclick="switchTab('calculator')" class="tab-btn active px-4 py-3 border-b-2 border-blue-600 text-blue-600 font-medium whitespace-nowrap">
+                    🧮 حاسبة التسييل
+                </button>
+                <button onclick="switchTab('installments')" class="tab-btn px-4 py-3 text-gray-600 hover:text-gray-800 whitespace-nowrap">
+                    📊 حاسبة الأقساط
+                </button>
+                <button onclick="switchTab('customers')" class="tab-btn px-4 py-3 text-gray-600 hover:text-gray-800 whitespace-nowrap">
+                    👥 العملاء
+                </button>
+                <button onclick="switchTab('reports')" class="tab-btn px-4 py-3 text-gray-600 hover:text-gray-800 whitespace-nowrap">
+                    📈 التقارير
+                </button>
+                <button id="adminTabBtn" onclick="switchTab('admin')" class="tab-btn px-4 py-3 text-gray-600 hover:text-gray-800 whitespace-nowrap hidden">
+                    ⚙️ الإعدادات
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="max-w-7xl mx-auto p-4">
+            <!-- Calculator Tab -->
+            <div id="calculatorTab" class="tab-content">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Liquidation Calculator -->
+                    <div class="md:col-span-1 bg-white rounded-lg card-shadow p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">💱 حاسبة التسييل</h2>
+
+                        <div class="space-y-4">
+                            <!-- App Selection -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">اسم التطبيق</label>
+                                <select id="appSelect" class="w-full input-field px-3 py-2 rounded-lg" onchange="updateCalculations()">
+                                    <option value="">-- اختر تطبيق --</option>
+                                </select>
+                            </div>
+
+                            <!-- Amount Input -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">مبلغ العميل</label>
+                                <input type="number" id="customerAmount" class="w-full input-field px-3 py-2 rounded-lg number-input" placeholder="20000" oninput="updateCalculations()" min="0">
+                                <p class="text-xs text-gray-500 mt-1">المبلغ المطلوب سحبه من التطبيق</p>
+                            </div>
+
+                            <!-- Liquidation Rate -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">نسبة التسييل (%)</label>
+                                <div class="flex gap-2">
+                                    <input type="number" id="liquidationRate" class="flex-1 input-field px-3 py-2 rounded-lg number-input" oninput="updateCalculations()" min="-100" max="100">
+                                    <button onclick="autoFillLiquidationRate()" class="btn-primary text-white px-3 py-2 rounded-lg">تلقائي</button>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">النسبة الإجمالية = النسبة الأساسية + نسبة العميل + النسبة المحاسبية</p>
+                            </div>
+
+                            <!-- Admin Fee -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">النسبة الإدارية (%)</label>
+                                <input type="number" id="adminFee" class="w-full input-field px-3 py-2 rounded-lg number-input" value="0" oninput="updateCalculations()" min="0" max="100">
+                            </div>
+
+                            <!-- Offer Selection -->
+                            <div class="accounting-section">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">العروض الخاصة</label>
+                                <select id="offerSelect" class="w-full input-field px-3 py-2 rounded-lg" onchange="updateCalculations()">
+                                    <option value="">-- لا يوجد عرض --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Display -->
+                    <div class="md:col-span-2 bg-white rounded-lg card-shadow p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">📊 نتائج الحسابات</h2>
+
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <!-- Deducted Amount -->
+                            <div class="calc-display">
+                                <p class="text-gray-600 text-sm mb-1">المبلغ المستقطع</p>
+                                <p class="text-2xl font-bold text-gray-800">
+                                    <span id="deductedAmount">0</span> ج.م
+                                </p>
+                                <p class="text-xs text-gray-500 mt-1">من مبلغ العميل الأصلي</p>
+                            </div>
+
+                            <!-- Net Received -->
+                            <div class="calc-display bg-gradient-to-br from-green-50 to-green-100 border-green-300">
+                                <p class="text-gray-600 text-sm mb-1">المبلغ المستلم (صافي)</p>
+                                <p class="text-2xl font-bold text-green-700">
+                                    <span id="netReceived">0</span> ج.م
+                                </p>
+                                <p class="text-xs text-gray-500 mt-1">كاش مباشر في اليد</p>
+                            </div>
+
+                            <!-- Discount Rate -->
+                            <div class="calc-display accounting-section">
+                                <p class="text-gray-600 text-sm mb-1">النسبة المحاسبية</p>
+                                <p class="text-2xl font-bold text-gray-800">
+                                    <span id="accountingRate">0</span>%
+                                </p>
+                                <p class="text-xs text-gray-500 mt-1">قيمة الربح للمكتب</p>
+                            </div>
+
+                            <!-- Total Discount Rate -->
+                            <div class="calc-display">
+                                <p class="text-gray-600 text-sm mb-1">إجمالي نسبة الخصم</p>
+                                <p class="text-2xl font-bold text-gray-800">
+                                    <span id="totalDiscountRate">0</span>%
+                                </p>
+                                <p class="text-xs text-gray-500 mt-1">من المبلغ الأصلي</p>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex gap-2 flex-wrap">
+                            <button onclick="takeScreenshot()" class="flex-1 btn-primary text-white font-bold py-2 px-4 rounded-lg">
+                                📸 تنزيل الصورة
+                            </button>
+                            <button onclick="sendToWhatsApp()" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">
+                                📱 إرسال للواتساب
+                            </button>
+                            <button onclick="openCustomerModal()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
+                                ✅ تم السحب
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Receipt Card for Screenshot -->
+                <div id="receiptCard" class="screen-capture-container hidden">
+                    <div class="text-center mb-4">
+                        <h3 class="text-2xl font-bold text-blue-600">💰 Cash VIP</h3>
+                        <p class="text-gray-600">تفاصيل عملية التسييل</p>
+                    </div>
+
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-600">التطبيق:</span>
+                            <span id="rcptApp" class="font-semibold">-</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-600">المبلغ الأصلي:</span>
+                            <span id="rcptAmount" class="font-semibold">0 ج.م</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-600">المبلغ المستلم:</span>
+                            <span id="rcptNetReceived" class="font-bold text-green-600">0 ج.م</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-600">المبلغ المستقطع:</span>
+                            <span id="rcptDeducted" class="font-semibold text-red-600">0 ج.م</span>
+                        </div>
+                        <div class="pt-2">
+                            <p class="text-center text-gray-600 text-xs">⚡ تنفيذ فوري وبأقل إجراءات تعقيدية</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Installments Tab -->
+            <div id="installmentsTab" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Installments Calculator -->
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">📊 حاسبة الأقساط والفوائد</h2>
+
+                        <div class="space-y-4">
+                            <!-- Duration -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">مدة التقسيط</label>
+                                <div class="flex gap-2">
+                                    <input type="range" id="durationMonths" min="3" max="60" value="24" class="flex-1" oninput="updateCalculations(); displayMonths()">
+                                    <input type="number" id="durationMonthsInput" class="w-16 input-field px-3 py-2 rounded-lg number-input" value="24" min="3" max="60" oninput="updateCalculations(); syncDuration()">
+                                    <span class="text-gray-600">شهر</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1" id="durationDisplay">24 شهراً = 2 سنة</p>
+                            </div>
+
+                            <!-- Interest Rate -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">الفائدة السنوية (%)</label>
+                                <input type="number" id="interestRate" class="w-full input-field px-3 py-2 rounded-lg number-input" value="38" oninput="updateCalculations()" min="0" max="100">
+                                <p class="text-xs text-gray-500 mt-1">المعدل الافتراضي 38% - قابل للتعديل</p>
+                            </div>
+
+                            <!-- Show Details -->
+                            <div>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="showDetails" onchange="updateCalculations()">
+                                    <span class="text-sm text-gray-700">عرض تفاصيل الحسابات</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Installments Results -->
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">💰 الأقساط</h2>
+
+                        <div class="space-y-3">
+                            <!-- Monthly Installment -->
+                            <div class="calc-display">
+                                <p class="text-gray-600 text-sm mb-1">القسط الشهري</p>
+                                <p class="text-3xl font-bold text-blue-600">
+                                    <span id="monthlyInstallment">0</span> ج.م
+                                </p>
+                            </div>
+
+                            <!-- Total Interest -->
+                            <div class="calc-display">
+                                <p class="text-gray-600 text-sm mb-1">إجمالي الفائدة</p>
+                                <p class="text-2xl font-bold text-orange-600">
+                                    <span id="totalInterest">0</span> ج.م
+                                </p>
+                            </div>
+
+                            <!-- Total Amount -->
+                            <div class="calc-display bg-gradient-to-br from-purple-50 to-purple-100 border-purple-300">
+                                <p class="text-gray-600 text-sm mb-1">إجمالي المبلغ (المبلغ + الفائدة)</p>
+                                <p class="text-2xl font-bold text-purple-700">
+                                    <span id="totalAmount">0</span> ج.م
+                                </p>
+                            </div>
+
+                            <!-- Calculation Details -->
+                            <div id="calculationDetails" class="hidden bg-gray-50 p-3 rounded-lg text-sm space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">المبلغ الأصلي:</span>
+                                    <span id="detailAmount">0 ج.م</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">الفائدة السنوية:</span>
+                                    <span id="detailRate">0%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">مدة التقسيط (سنوات):</span>
+                                    <span id="detailYears">0</span>
+                                </div>
+                                <div class="border-t pt-2">
+                                    <p class="text-gray-600">المعادلة: المبلغ × (الفائدة / 100) × السنوات</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customers Tab -->
+            <div id="customersTab" class="tab-content hidden">
+                <div class="bg-white rounded-lg card-shadow p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">👥 العملاء والعمليات</h2>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b-2 border-gray-300 bg-gray-50">
+                                    <th class="p-3 text-right font-semibold">التاريخ</th>
+                                    <th class="p-3 text-right font-semibold">اسم العميل</th>
+                                    <th class="p-3 text-right font-semibold sensitive-data">رقم الهاتف</th>
+                                    <th class="p-3 text-right font-semibold">التطبيق</th>
+                                    <th class="p-3 text-right font-semibold">المبلغ</th>
+                                    <th class="p-3 text-right font-semibold">المبلغ المستلم</th>
+                                    <th class="p-3 text-right font-semibold">القسط الشهري</th>
+                                    <th class="p-3 text-right font-semibold">الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersTableBody">
+                                <tr>
+                                    <td class="p-3 text-center text-gray-500" colspan="8">لا توجد عمليات</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="reportsTab" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="stats-card bg-white rounded-lg card-shadow p-6">
+                        <p class="text-gray-600 text-sm mb-2">إجمالي العمليات</p>
+                        <p class="text-3xl font-bold text-blue-600" id="totalTransactions">0</p>
+                    </div>
+
+                    <div class="stats-card bg-white rounded-lg card-shadow p-6">
+                        <p class="text-gray-600 text-sm mb-2">إجمالي المبالغ</p>
+                        <p class="text-3xl font-bold text-green-600" id="totalAmountStats">0 ج.م</p>
+                    </div>
+
+                    <div class="stats-card bg-white rounded-lg card-shadow p-6">
+                        <p class="text-gray-600 text-sm mb-2">عمليات اليوم</p>
+                        <p class="text-3xl font-bold text-orange-600" id="todayTransactions">0</p>
+                    </div>
+
+                    <div class="stats-card bg-white rounded-lg card-shadow p-6">
+                        <p class="text-gray-600 text-sm mb-2">المبلغ المستلم</p>
+                        <p class="text-3xl font-bold text-purple-600" id="totalNetReceived">0 ج.م</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg card-shadow p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">📈 التقارير المفصلة</h2>
+
+                    <div class="mb-4 flex gap-2 flex-wrap">
+                        <input type="date" id="reportStartDate" class="input-field px-3 py-2 rounded-lg">
+                        <input type="date" id="reportEndDate" class="input-field px-3 py-2 rounded-lg">
+                        <button onclick="generateReport()" class="btn-primary text-white px-4 py-2 rounded-lg">
+                            🔍 إنشاء التقرير
+                        </button>
+                        <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                            📊 تصدير Excel
+                        </button>
+                    </div>
+
+                    <div id="reportContent" class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b-2 border-gray-300 bg-gray-50">
+                                    <th class="p-3 text-right font-semibold">التاريخ</th>
+                                    <th class="p-3 text-right font-semibold">اسم العميل</th>
+                                    <th class="p-3 text-right font-semibold">رقم الهاتف</th>
+                                    <th class="p-3 text-right font-semibold">التطبيق</th>
+                                    <th class="p-3 text-right font-semibold">المبلغ</th>
+                                    <th class="p-3 text-right font-semibold">المبلغ المستلم</th>
+                                    <th class="p-3 text-right font-semibold">القسط</th>
+                                    <th class="p-3 text-right font-semibold">الفائدة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Settings Tab -->
+            <div id="adminTab" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Apps Management -->
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">⚙️ إدارة التطبيقات</h2>
+
+                        <div class="space-y-3 mb-6">
+                            <input type="text" id="newAppName" class="w-full input-field px-3 py-2 rounded-lg" placeholder="اسم التطبيق">
+                            <input type="number" id="newBasicRate" class="w-full input-field px-3 py-2 rounded-lg number-input" placeholder="النسبة الأساسية (%)" step="0.1">
+                            <input type="number" id="newClientRate" class="w-full input-field px-3 py-2 rounded-lg number-input" placeholder="نسبة العميل (%)" step="0.1">
+                            <input type="number" id="newAccountingRate" class="w-full input-field px-3 py-2 rounded-lg number-input" placeholder="النسبة المحاسبية (%)" step="0.1">
+                            <button onclick="addNewApp()" class="w-full btn-primary text-white font-bold py-2 px-4 rounded-lg">
+                                ➕ إضافة تطبيق جديد
+                            </button>
+                        </div>
+
+                        <div id="appsListAdmin" class="space-y-2 max-h-96 overflow-y-auto">
+                        </div>
+                    </div>
+
+                    <!-- Offers Management -->
+                    <div class="bg-white rounded-lg card-shadow p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">🎁 إدارة العروض</h2>
+
+                        <div id="offersListAdmin" class="space-y-3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Modal -->
+    <div id="customerModal" class="modal-backdrop">
+        <div class="bg-white rounded-lg p-8 shadow-lg max-w-md w-full card-shadow">
+            <h2 class="text-2xl font-bold mb-6">✅ حفظ العملية</h2>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">اسم العميل</label>
+                    <input type="text" id="customerName" class="w-full input-field px-3 py-2 rounded-lg" placeholder="أدخل اسم العميل">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">رقم الهاتف</label>
+                    <input type="tel" id="customerPhone" class="w-full input-field px-3 py-2 rounded-lg" placeholder="01030544731">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">ملاحظات</label>
+                    <textarea id="customerNotes" class="w-full input-field px-3 py-2 rounded-lg" placeholder="ملاحظات إضافية" rows="3"></textarea>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="saveCustomer()" class="flex-1 btn-primary text-white font-bold py-2 px-4 rounded-lg">
+                        💾 حفظ
+                    </button>
+                    <button onclick="closeCustomerModal()" class="flex-1 bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">
+                        إلغاء
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        let appState = {
+            isLoggedIn: false,
+            userRole: null,
+            username: null,
+            token: null,
+            apps: [],
+            offers: [],
+            transactions: [],
+            privacyMode: false,
+            currentTab: 'calculator'
+        };
+
+        // Initialize with mock data
+        const mockApps = [
+            { id: 1, name: 'مايلو', basic_rate: 0, client_rate: 0, accounting_rate: 0 },
+            { id: 2, name: 'حالا كارت', basic_rate: -5, client_rate: -10, accounting_rate: -5 },
+            { id: 3, name: 'حالا ابليكيشن', basic_rate: -12, client_rate: -15, accounting_rate: -3 },
+            { id: 4, name: 'فاليو كارت', basic_rate: -5, client_rate: -10, accounting_rate: -5 },
+            { id: 5, name: 'فاليو ابليكيشن', basic_rate: -12, client_rate: -15, accounting_rate: -3 },
+            { id: 6, name: 'سهولة', basic_rate: -12, client_rate: -16, accounting_rate: -4 },
+            { id: 7, name: 'موجو', basic_rate: -12, client_rate: -16, accounting_rate: -4 },
+            { id: 8, name: 'كونتكت', basic_rate: -12, client_rate: -16, accounting_rate: -4 },
+            { id: 9, name: 'فرصة', basic_rate: -12, client_rate: -16, accounting_rate: -4 },
+            { id: 10, name: 'أمان', basic_rate: -12, client_rate: -16, accounting_rate: -4 },
+            { id: 11, name: 'بلنك', basic_rate: -32, client_rate: 0, accounting_rate: 32 },
+            { id: 12, name: 'ترو', basic_rate: -12, client_rate: -16, accounting_rate: -4 },
+            { id: 13, name: 'كارت تكة', basic_rate: -5, client_rate: -8.5, accounting_rate: -4 },
+            { id: 14, name: 'كارت فوري', basic_rate: -4, client_rate: -8.5, accounting_rate: -5 },
+            { id: 15, name: 'كارت لاكي', basic_rate: -4, client_rate: -8.5, accounting_rate: -5 },
+            { id: 16, name: 'كارت بريميوم', basic_rate: -15, client_rate: -20, accounting_rate: -5 },
+            { id: 17, name: 'كارت فيزا_مشتريات', basic_rate: -4, client_rate: -8.5, accounting_rate: -5 },
+            { id: 18, name: 'كليفر', basic_rate: -12, client_rate: -17, accounting_rate: -5 },
+            { id: 19, name: 'سفن', basic_rate: -12, client_rate: -17, accounting_rate: -5 },
+            { id: 20, name: 'بي_تك', basic_rate: -10, client_rate: -15, accounting_rate: -3 }
+        ];
+
+        const mockOffers = [
+            { id: 1, name: 'بدون فوائد', type: 'zero_interest', is_active: false, boost_percent: 0, interest_rate: 0 },
+            { id: 2, name: 'عرض تريبل زيرو', type: 'triple_zero', is_active: false, boost_percent: 0, interest_rate: 0 },
+            { id: 3, name: 'زيادة رصيد', type: 'balance_boost', is_active: false, boost_percent: 10, interest_rate: 0 },
+            { id: 4, name: 'عرض مخصص', type: 'custom', is_active: false, boost_percent: 0, interest_rate: 0 }
+        ];
+
+        // Login Functions
+        function showRoleSelection(role) {
+            document.getElementById('loginModal').classList.add('active');
+            if (role === 'admin') {
+                document.getElementById('loginUsername').value = 'admin';
+                document.getElementById('loginPassword').value = 'admin123';
+            } else {
+                document.getElementById('loginUsername').value = 'emp';
+                document.getElementById('loginPassword').value = 'emp123';
+            }
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Mock authentication
+            if ((username === 'admin' && password === 'admin123') || 
+                (username === 'emp' && password === 'emp123')) {
+                appState.isLoggedIn = true;
+                appState.userRole = username === 'admin' ? 'admin' : 'employee';
+                appState.username = username;
+                appState.token = 'mock-jwt-token';
+
+                showMainApp();
+                closeLoginModal();
+            } else {
+                document.getElementById('loginError').textContent = 'بيانات دخول غير صحيحة';
+                document.getElementById('loginError').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('loginError').classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        function showMainApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            
+            // Load apps and offers
+            appState.apps = mockApps;
+            appState.offers = mockOffers;
+            
+            // Update UI
+            document.getElementById('userRole').textContent = appState.userRole === 'admin' ? '🔐 مدير' : '👤 موظف';
+            document.getElementById('userDisplay').textContent = appState.username;
+
+            if (appState.userRole === 'admin') {
+                document.getElementById('adminTabBtn').classList.remove('hidden');
+            }
+
+            populateAppSelect();
+            populateOfferSelect();
+            loadAdminUI();
+            loadReportStats();
+        }
+
+        function logout() {
+            appState.isLoggedIn = false;
+            appState.userRole = null;
+            appState.username = null;
+            appState.token = null;
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            location.reload();
+        }
+
+        // UI Navigation
+        function switchTab(tab) {
+            appState.currentTab = tab;
+            
+            // Update active tab button
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-b-2', 'border-blue-600', 'text-blue-600');
+                btn.classList.add('text-gray-600');
+            });
+            event.target.classList.add('border-b-2', 'border-blue-600', 'text-blue-600');
+            
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Show selected tab
+            document.getElementById(tab + 'Tab').classList.remove('hidden');
+        }
+
+        // App Management
+        function populateAppSelect() {
+            const select = document.getElementById('appSelect');
+            select.innerHTML = '<option value="">-- اختر تطبيق --</option>';
+            mockApps.forEach(app => {
+                const option = document.createElement('option');
+                option.value = app.id;
+                option.textContent = app.name;
+                select.appendChild(option);
+            });
+        }
+
+        function populateOfferSelect() {
+            const select = document.getElementById('offerSelect');
+            select.innerHTML = '<option value="">-- لا يوجد عرض --</option>';
+            mockOffers.forEach(offer => {
+                const option = document.createElement('option');
+                option.value = offer.id;
+                option.textContent = offer.name;
+                select.appendChild(option);
+            });
+        }
+
+        function autoFillLiquidationRate() {
+            const appId = document.getElementById('appSelect').value;
+            if (!appId) {
+                alert('اختر تطبيق أولاً');
+                return;
+            }
+            
+            const app = mockApps.find(a => a.id == appId);
+            const totalRate = app.basic_rate + app.client_rate + app.accounting_rate;
+            document.getElementById('liquidationRate').value = totalRate;
+            updateCalculations();
+        }
+
+        // Calculations
+        function updateCalculations() {
+            const amount = parseFloat(document.getElementById('customerAmount').value) || 0;
+            const liquidationRate = parseFloat(document.getElementById('liquidationRate').value) || 0;
+            const adminFee = parseFloat(document.getElementById('adminFee').value) || 0;
+            const appId = document.getElementById('appSelect').value;
+            const durationMonths = parseInt(document.getElementById('durationMonths').value) || 24;
+            const interestRate = parseFloat(document.getElementById('interestRate').value) || 38;
+            const offerId = document.getElementById('offerSelect').value;
+
+            // Get app data
+            const app = appId ? mockApps.find(a => a.id == appId) : null;
+
+            // Calculate liquidation
+            const deductedAmount = amount * Math.abs(liquidationRate) / 100;
+            const netReceived = amount - deductedAmount;
+            const totalDiscountRate = liquidationRate + adminFee;
+
+            // Calculate installments
+            const durationYears = durationMonths / 12;
+            let totalInterest = 0;
+            let monthlyInstallment = 0;
+            let totalAmount = amount;
+
+            // Handle offers
+            let adjustedAmount = amount;
+            if (offerId) {
+                const offer = mockOffers.find(o => o.id == offerId);
+                if (offer && offer.type === 'balance_boost') {
+                    adjustedAmount = amount * (1 + offer.boost_percent / 100);
+                }
+            }
+
+            if (interestRate > 0) {
+                totalInterest = adjustedAmount * (interestRate / 100) * durationYears;
+                totalAmount = adjustedAmount + totalInterest;
+                monthlyInstallment = totalAmount / durationMonths;
+            } else {
+                monthlyInstallment = adjustedAmount / durationMonths;
+            }
+
+            // Update display
+            document.getElementById('deductedAmount').textContent = formatCurrency(deductedAmount);
+            document.getElementById('netReceived').textContent = formatCurrency(netReceived);
+            document.getElementById('totalDiscountRate').textContent = totalDiscountRate.toFixed(2);
+            document.getElementById('accountingRate').textContent = app ? app.accounting_rate : 0;
+
+            document.getElementById('monthlyInstallment').textContent = formatCurrency(monthlyInstallment);
+            document.getElementById('totalInterest').textContent = formatCurrency(totalInterest);
+            document.getElementById('totalAmount').textContent = formatCurrency(totalAmount);
+
+            // Update calculation details
+            if (document.getElementById('showDetails').checked) {
+                document.getElementById('calculationDetails').classList.remove('hidden');
+                document.getElementById('detailAmount').textContent = formatCurrency(adjustedAmount);
+                document.getElementById('detailRate').textContent = interestRate + '%';
+                document.getElementById('detailYears').textContent = durationYears.toFixed(2);
+            } else {
+                document.getElementById('calculationDetails').classList.add('hidden');
+            }
+
+            // Update receipt
+            document.getElementById('rcptApp').textContent = app ? app.name : '-';
+            document.getElementById('rcptAmount').textContent = formatCurrency(amount);
+            document.getElementById('rcptNetReceived').textContent = formatCurrency(netReceived);
+            document.getElementById('rcptDeducted').textContent = formatCurrency(deductedAmount);
+        }
+
+        function formatCurrency(value) {
+            return Math.round(value).toLocaleString('ar-EG');
+        }
+
+        function displayMonths() {
+            const months = parseInt(document.getElementById('durationMonths').value) || 24;
+            const years = (months / 12).toFixed(2);
+            document.getElementById('durationMonthsInput').value = months;
+            document.getElementById('durationDisplay').textContent = `${months} شهراً = ${years} سنة`;
+            updateCalculations();
+        }
+
+        function syncDuration() {
+            const months = parseInt(document.getElementById('durationMonthsInput').value) || 24;
+            if (months >= 3 && months <= 60) {
+                document.getElementById('durationMonths').value = months;
+                displayMonths();
+            }
+        }
+
+        // Privacy Mode
+        function togglePrivacyMode() {
+            appState.privacyMode = document.getElementById('privacyToggle').checked;
+            const mainApp = document.getElementById('mainApp');
+            
+            if (appState.privacyMode) {
+                mainApp.classList.add('privacy-mode');
+            } else {
+                mainApp.classList.remove('privacy-mode');
+            }
+        }
+
+        // Screenshot
+        function takeScreenshot() {
+            const card = document.getElementById('receiptCard');
+            card.classList.remove('hidden');
+
+            html2canvas(card, {
+                scale: 2,
+                backgroundColor: '#ffffff',
+                logging: false
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = `cash-vip-${new Date().toLocaleString('ar-EG')}.png`;
+                link.click();
+                card.classList.add('hidden');
+            });
+        }
+
+        // WhatsApp
+        function sendToWhatsApp() {
+            const app = mockApps.find(a => a.id == document.getElementById('appSelect').value);
+            const amount = document.getElementById('customerAmount').value;
+            const netReceived = document.getElementById('netReceived').textContent;
+            const durationMonths = document.getElementById('durationMonths').value;
+            const monthlyInstallment = document.getElementById('monthlyInstallment').textContent;
+
+            if (!app || !amount) {
+                alert('يرجى ملء جميع البيانات أولاً');
+                return;
+            }
+
+            const message = `🎉 عروض تفصيلية مميزة من *Cash VIP*!
+📱 التطبيق: ${app.name}
+💰 إجمالي المبلغ المطلوب سحبه: ${amount} ج.م
+💵 صافي كاش تستلمه في إيدك: ${netReceived} ج.م
+⏱️ مدة التقسيط المتاحة: ${durationMonths} شهراً
+📉 القسط الشهري الخاص بك: ${monthlyInstallment} ج.م
+⚡ تنفيذ فوري وبأقل إجراءات تعقيدية في مصر!`;
+
+            const phone = '01030544731';
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Customer Modal
+        function openCustomerModal() {
+            const amount = document.getElementById('customerAmount').value;
+            if (!amount) {
+                alert('يرجى إدخال مبلغ أولاً');
+                return;
+            }
+            document.getElementById('customerModal').classList.add('active');
+        }
+
+        function closeCustomerModal() {
+            document.getElementById('customerModal').classList.remove('active');
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+            document.getElementById('customerNotes').value = '';
+        }
+
+        function saveCustomer() {
+            const app = mockApps.find(a => a.id == document.getElementById('appSelect').value);
+            const name = document.getElementById('customerName').value;
+            const phone = document.getElementById('customerPhone').value;
+            const amount = parseFloat(document.getElementById('customerAmount').value);
+            const netReceived = parseFloat(document.getElementById('netReceived').textContent.replace(/,/g, ''));
+            const monthlyInstallment = parseFloat(document.getElementById('monthlyInstallment').textContent.replace(/,/g, ''));
+            const notes = document.getElementById('customerNotes').value;
+
+            if (!name || !phone || !amount) {
+                alert('يرجى ملء جميع البيانات');
+                return;
+            }
+
+            const transaction = {
+                id: Date.now(),
+                date: new Date().toLocaleString('ar-EG'),
+                name,
+                phone,
+                app: app.name,
+                amount,
+                netReceived,
+                monthlyInstallment,
+                notes,
+                status: 'تم السحب'
+            };
+
+            appState.transactions.push(transaction);
+            updateCustomersTable();
+            closeCustomerModal();
+            alert('✅ تم حفظ العملية بنجاح');
+        }
+
+        function updateCustomersTable() {
+            const tbody = document.getElementById('customersTableBody');
+            if (appState.transactions.length === 0) {
+                tbody.innerHTML = '<tr><td class="p-3 text-center text-gray-500" colspan="8">لا توجد عمليات</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = appState.transactions.map(t => `
+                <tr class="border-b hover:bg-gray-50 table-row-striped">
+                    <td class="p-3">${t.date}</td>
+                    <td class="p-3">${t.name}</td>
+                    <td class="p-3 sensitive-data">${t.phone}</td>
+                    <td class="p-3">${t.app}</td>
+                    <td class="p-3">${formatCurrency(t.amount)} ج.م</td>
+                    <td class="p-3">${formatCurrency(t.netReceived)} ج.م</td>
+                    <td class="p-3">${formatCurrency(t.monthlyInstallment)} ج.م</td>
+                    <td class="p-3"><span class="badge-success px-2 py-1 rounded text-xs">${t.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        // Reports
+        function loadReportStats() {
+            const stats = {
+                totalTransactions: appState.transactions.length,
+                totalAmount: appState.transactions.reduce((sum, t) => sum + t.amount, 0),
+                todayTransactions: 0,
+                totalNetReceived: appState.transactions.reduce((sum, t) => sum + t.netReceived, 0)
+            };
+
+            document.getElementById('totalTransactions').textContent = stats.totalTransactions;
+            document.getElementById('totalAmountStats').textContent = formatCurrency(stats.totalAmount) + ' ج.م';
+            document.getElementById('todayTransactions').textContent = stats.todayTransactions;
+            document.getElementById('totalNetReceived').textContent = formatCurrency(stats.totalNetReceived) + ' ج.م';
+        }
+
+        function generateReport() {
+            const startDate = document.getElementById('reportStartDate').value;
+            const endDate = document.getElementById('reportEndDate').value;
+
+            let filtered = appState.transactions;
+            if (startDate) {
+                const start = new Date(startDate);
+                filtered = filtered.filter(t => new Date(t.date) >= start);
+            }
+            if (endDate) {
+                const end = new Date(endDate);
+                filtered = filtered.filter(t => new Date(t.date) <= end);
+            }
+
+            const tbody = document.getElementById('reportTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td class="p-3 text-center text-gray-500" colspan="8">لا توجد عمليات في هذه الفترة</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(t => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-3">${t.date}</td>
+                    <td class="p-3">${t.name}</td>
+                    <td class="p-3">${t.phone}</td>
+                    <td class="p-3">${t.app}</td>
+                    <td class="p-3">${formatCurrency(t.amount)} ج.م</td>
+                    <td class="p-3">${formatCurrency(t.netReceived)} ج.م</td>
+                    <td class="p-3">${formatCurrency(t.monthlyInstallment)} ج.م</td>
+                    <td class="p-3">${formatCurrency(t.amount - t.netReceived)} ج.م</td>
+                </tr>
+            `).join('');
+        }
+
+        function exportToExcel() {
+            alert('📊 ميزة التصدير قابلة للتطوير - يتم إرسال البيانات إلى خادم للمعالجة');
+        }
+
+        // Admin Functions
+        function loadAdminUI() {
+            if (appState.userRole !== 'admin') return;
+
+            // Load apps list
+            const appsList = document.getElementById('appsListAdmin');
+            appsList.innerHTML = mockApps.map(app => `
+                <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-gray-800">${app.name}</h3>
+                        <button onclick="deleteApp(${app.id})" class="text-red-600 hover:text-red-800">🗑️</button>
+                    </div>
+                    <div class="text-xs text-gray-600 space-y-1">
+                        <p>النسبة الأساسية: ${app.basic_rate}%</p>
+                        <p>نسبة العميل: ${app.client_rate}%</p>
+                        <p>النسبة المحاسبية: ${app.accounting_rate}%</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // Load offers list
+            const offersList = document.getElementById('offersListAdmin');
+            offersList.innerHTML = mockOffers.map(offer => `
+                <div class="bg-gray-50 p-3 rounded-lg border ${offer.is_active ? 'border-green-500 bg-green-50' : 'border-gray-200'}">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-semibold text-gray-800">${offer.name}</h3>
+                            <p class="text-xs text-gray-600">${offer.type}</p>
+                        </div>
+                        ${offer.is_active ? '<span class="bg-green-200 text-green-800 px-2 py-1 rounded text-xs">✓ مفعّل</span>' : 
+                        `<button onclick="activateOffer(${offer.id})" class="btn-primary text-white px-3 py-1 rounded text-xs">تفعيل</button>`}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addNewApp() {
+            const name = document.getElementById('newAppName').value;
+            const basicRate = parseFloat(document.getElementById('newBasicRate').value) || 0;
+            const clientRate = parseFloat(document.getElementById('newClientRate').value) || 0;
+            const accountingRate = parseFloat(document.getElementById('newAccountingRate').value) || 0;
+
+            if (!name) {
+                alert('يرجى إدخال اسم التطبيق');
+                return;
+            }
+
+            const newApp = {
+                id: Math.max(...mockApps.map(a => a.id)) + 1,
+                name,
+                basic_rate: basicRate,
+                client_rate: clientRate,
+                accounting_rate: accountingRate
+            };
+
+            mockApps.push(newApp);
+            populateAppSelect();
+            loadAdminUI();
+
+            document.getElementById('newAppName').value = '';
+            document.getElementById('newBasicRate').value = '';
+            document.getElementById('newClientRate').value = '';
+            document.getElementById('newAccountingRate').value = '';
+
+            alert('✅ تم إضافة التطبيق بنجاح');
+        }
+
+        function deleteApp(id) {
+            if (confirm('هل أنت متأكد من حذف هذا التطبيق؟')) {
+                const index = mockApps.findIndex(a => a.id === id);
+                if (index > -1) {
+                    mockApps.splice(index, 1);
+                    populateAppSelect();
+                    loadAdminUI();
+                    alert('✅ تم حذف التطبيق بنجاح');
+                }
+            }
+        }
+
+        function activateOffer(id) {
+            // Deactivate all
+            mockOffers.forEach(o => o.is_active = false);
+            // Activate selected
+            const offer = mockOffers.find(o => o.id === id);
+            if (offer) {
+                offer.is_active = true;
+                loadAdminUI();
+                alert('✅ تم تفعيل العرض: ' + offer.name);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Listen for tab navigation
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.classList.remove('border-b-2', 'border-blue-600', 'text-blue-600');
+                        b.classList.add('text-gray-600');
+                    });
+                    e.target.classList.add('border-b-2', 'border-blue-600', 'text-blue-600');
+                });
+            });
+
+            // Update calculations on input changes
+            ['customerAmount', 'liquidationRate', 'adminFee', 'appSelect', 'durationMonths', 'interestRate', 'offerSelect'].forEach(id => {
+                const elem = document.getElementById(id);
+                if (elem) {
+                    elem.addEventListener('change', updateCalculations);
+                    elem.addEventListener('input', updateCalculations);
+                }
+            });
+        });
+
+        // Set current date as default
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('reportStartDate').value = today;
+        document.getElementById('reportEndDate').value = today;
+    </script>
+</body>
+</html>
